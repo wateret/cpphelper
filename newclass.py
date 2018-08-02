@@ -4,18 +4,29 @@ import sys
 import re
 import os.path
 
+def usage_and_exit():
+    print("Usage:")
+    print("    Argument format : '{namespace::}+class'.")
+    print("")
+    print("Example:")
+    print("    %s toplevel::secondlevel::MyClass" % sys.argv[0])
+    sys.exit(1)
+
 def camel_to_snake(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 if len(sys.argv) < 2:
-    sys.exit(0)
+    usage_and_exit()
 
-class_name = sys.argv[1]
 try:
-    namespaces = sys.argv[2].split("::")
+    split = sys.argv[1].split("::")
+    if any(val == "" for val in split):
+        raise ValueError()
+    namespaces = split[:-1]
+    class_name = split[-1]
 except:
-    namespaces = []
+    usage_and_exit()
 
 class_name_lower = class_name.lower()
 class_name_upper = class_name.upper()
